@@ -67,7 +67,7 @@ PROCESS_THREAD(init_system_proc, ev, data)
 
         sprintf(device_address,"[%c%c%c%c]-Device-%s",device_id[12],device_id[13],device_id[14],device_id[15],device_id);
         connect_udp_server();
-        etimer_set(&periodic_timer, 5 * CLOCK_SECOND);
+        etimer_set(&periodic_timer, CLOCK_SECOND);
         debug_os("No inicializado - %s\n", device_address);
 
         while (1) {

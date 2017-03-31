@@ -11,7 +11,7 @@ server.on('listening', function () {
 });
 
 server.on('message', function (message, remote) {
-    console.log(remote.address + ' Port:' + remote.port +' - ' + message);
+    console.log('['+new Date().toISOString()+'] '+remote.address + ' Port:' + remote.port +' - ' + message);
 });
 
 server.bind(PORT, HOST);
