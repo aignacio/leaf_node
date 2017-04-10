@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <float.h>
 #include "contiki.h"
 #include "contiki-net.h"
 #include "dev/serial-line.h"
@@ -45,7 +46,7 @@
 
 #define UDP_PORT_CENTRAL 7878
 #define UDP_PORT_OUT 5555
-
+#define NTC_SAMPLES 10
 #define CLOCK_MINUTE CLOCK_SECOND*60
 
 static struct simple_udp_connection broadcast_connection;
@@ -57,9 +58,9 @@ void uip_debug_ipaddr_print(const uip_ipaddr_t *addr);
 int serial_cb_rx(unsigned char c);
 uint16_t readBat(void);
 uint16_t readADC(void);
+uint16_t readTempNTC(void);
 void getDecStr(uint8_t* str, uint8_t len, uint32_t val);
 void formatDataFeedback(uint8_t *buffer, uint8_t *buff_udp);
-uint16_t readTempNTC(void);
 
 /*---------------------------------------------------------------------------*/
 PROCESS(init_system_proc, "Init system process");
@@ -104,8 +105,8 @@ PROCESS_THREAD(init_system_proc, ev, data){
 
         //Inicializando ADC
         SENSORS_ACTIVATE(batmon_sensor);
-        adc_sensor.configure(SENSORS_ACTIVE, 1);
-        adc_sensor.configure(ADC_SENSOR_SET_CHANNEL, ADC_COMPB_IN_AUXIO7);
+        // adc_sensor.configure(SENSORS_ACTIVE, 1);
+        // adc_sensor.configure(ADC_SENSOR_SET_CHANNEL, ADC_COMPB_IN_AUXIO7);
 
         //formatDataFeedback(buff_udp, buff_udp);
         //simple_udp_sendto(&broadcast_connection, buff_udp, strlen((const char *)buff_udp), &server_addr);
@@ -124,24 +125,12 @@ PROCESS_THREAD(init_system_proc, ev, data){
 }
 /*---------------------------------------------------------------------------*/
 void formatDataFeedback(uint8_t *buffer, uint8_t *buff_udp){
-        static uint16_t ADC_IO7, ADCBat;
-        int measurement;
+        uint16_t temp, voltBat;
         int def_rt_rssi = sicslowpan_get_last_rssi();
-        ADC_IO7 = readADC();
-        ADCBat = readBat();
-
-        // uint32_t teste2 = 8400/0.005412;
-        // double teste = 8400/0.005412;
-        // printf("\nln(8400/54.12) = %d\n",log(teste));
-        // printf("\nln(8400/54.12) = %d\n",log(teste2));
-        // value = batmon_sensor.value(BATMON_SENSOR_TYPE_TEMP);
-
-        measurement = adc_sensor.value(ADC_SENSOR_VALUE);
-        printf("\nADC_Sensor_Driver=%d", measurement);
-        printf("\nADC Manual - IO7=%d", ADC_IO7);
-
-        // sprintf((char *)buff_udp, "[%02X%02X/%d/%d/%d]",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], ADCBat, ADC_IO7, def_rt_rssi);
-        // printf("\n%s - len:%d bytes",buff_udp, (unsigned int)strlen((const char *)buff_udp));
+        voltBat = readBat();//batmon_sensor.value(BATMON_SENSOR_TYPE_VOLT);
+        temp = readTempNTC();
+        sprintf((char *)buff_udp, "|%02X%02X|%dC|%dmV|%ddBm|",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], temp, voltBat, def_rt_rssi);
+        printf("\n%s - len:%d bytes",buff_udp, (unsigned int)strlen((const char *)buff_udp));
         // Formato JSON, não envio para poupar bateria mas caso seja necessário
         //sprintf((char *)buffer, "{'dev':'%02X%02X','bat':'%dmV','ad':'%dmV'}",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], ADCBat, ADC_IO7);
         //printf("\n%s - Tamanho:%d bytes",buffer, (unsigned int)strlen((const char *)buffer));
@@ -180,6 +169,19 @@ uint16_t readBat(void){
 
 uint16_t readADC(void){
         uint16_t singleSample;
+        // uint32_t pins[] = {
+        //   BOARD_IOID_CS, BOARD_IOID_TDO, BOARD_IOID_TDI, BOARD_IOID_DIO12,
+        //   BOARD_IOID_DIO15, BOARD_IOID_DIO21, BOARD_IOID_DIO22, BOARD_IOID_DIO23,
+        //   BOARD_IOID_DIO24, BOARD_IOID_DIO25, BOARD_IOID_DIO26, BOARD_IOID_DIO27,
+        //   BOARD_IOID_DIO28, BOARD_IOID_DIO29, BOARD_IOID_DIO30,
+        //   IOID_UNUSED
+        // };
+        //
+        // uint32_t *pin;
+        // Atenção: Para ler o ADC corretamente é necessário desabilitar a função de pull down ativada pela lib de inicilização da placa, aguardando report do pessoal do contiki
+        // ti_lib_ioc_io_port_pull_set(IOID_5, IOC_NO_IOPULL);
+        ti_lib_ioc_io_port_pull_set(BOARD_IOID_DIO23, IOC_NO_IOPULL);
+
         ti_lib_aon_wuc_aux_wakeup_event(AONWUC_AUX_WAKEUP);
         while(!(ti_lib_aon_wuc_power_status_get() & AONWUC_AUX_POWER_ON)) ;
         ti_lib_aux_wuc_clock_enable(AUX_WUC_ADI_CLOCK | AUX_WUC_ANAIF_CLOCK | AUX_WUC_SMPH_CLOCK);
@@ -193,15 +195,28 @@ uint16_t readADC(void){
 }
 
 uint16_t readTempNTC(void){
-        uint16_t ADCSamples[10];
-        for (size_t i = 0; i < 10; i++)
+        uint16_t ADCSamples[10], meanVolt = 0, meanRes, meanTemp;
+        for (size_t i = 0; i < NTC_SAMPLES; i++)
                 ADCSamples[i] = readADC();
-        //
-        // double result;
-        // result = log(1.5);
-        // printf("\nln(1.5) = %2.2f\n",result);
-        // Fundo de escala 4.3V - 4096 BITS
+        // Convertendo em mV
+        for (size_t i = 0; i < NTC_SAMPLES; i++)
+                ADCSamples[i] = (1.0498046)*(float)ADCSamples[i];
+        for (size_t i = 0; i < NTC_SAMPLES; i++)
+                meanVolt += ADCSamples[i];
 
+        meanVolt = (float)meanVolt/NTC_SAMPLES;
+        printf("\nNTC(mV): %dmV",meanVolt);
+
+        // Convertendo em ohms
+        meanRes = meanVolt*10000/(3330-meanVolt);
+        printf("\nNTC(Ohms): %d ohms",meanRes);
+
+        // Convertendo em graus celsius
+        float tempNTC;
+        tempNTC = 4300/(log(meanRes/0.00541171)) - 273;
+        meanTemp = tempNTC*100;
+        printf("\nNTC(temp): %d C",meanTemp);
+        return meanTemp;
 }
 
 void cb_receive_udp(struct simple_udp_connection *c,
