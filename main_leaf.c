@@ -48,7 +48,7 @@
 #define UDP_PORT_OUT 5555
 #define NTC_SAMPLES 10
 #define CLOCK_MINUTE CLOCK_SECOND*60
-
+#define CC2650_HOMESTARK
 static struct simple_udp_connection broadcast_connection;
 static uip_ipaddr_t server_addr;
 static uint16_t central_addr[] = {0xaaaa, 0, 0, 0, 0, 0, 0, 0x1};
@@ -97,7 +97,7 @@ PROCESS_THREAD(init_system_proc, ev, data){
                 linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7]);
         sprintf((char *)device_address,"[%c%c%c%c]-Device-%s",device_id[12],device_id[13],device_id[14],device_id[15],device_id);
         connect_udp_server();
-        etimer_set(&periodic_timer, CLOCK_SECOND);
+        etimer_set(&periodic_timer, CLOCK_MINUTE*15);
         debug_os("Dispositivo inicializado - %s\n", device_address);
 
         //Inicializando RX-UART
@@ -168,6 +168,30 @@ uint16_t readBat(void){
 }
 
 uint16_t readADC(void){
+        // uint16_t singleSample;
+        // // uint32_t pins[] = {
+        // //   BOARD_IOID_CS, BOARD_IOID_TDO, BOARD_IOID_TDI, BOARD_IOID_DIO12,
+        // //   BOARD_IOID_DIO15, BOARD_IOID_DIO21, BOARD_IOID_DIO22, BOARD_IOID_DIO23,
+        // //   BOARD_IOID_DIO24, BOARD_IOID_DIO25, BOARD_IOID_DIO26, BOARD_IOID_DIO27,
+        // //   BOARD_IOID_DIO28, BOARD_IOID_DIO29, BOARD_IOID_DIO30,
+        // //   IOID_UNUSED
+        // // };
+        // //
+        // // uint32_t *pin;
+        // // Atenção: Para ler o ADC corretamente é necessário desabilitar a função de pull down ativada pela lib de inicilização da placa, aguardando report do pessoal do contiki
+        // // ti_lib_ioc_io_port_pull_set(IOID_5, IOC_NO_IOPULL);
+        // ti_lib_ioc_io_port_pull_set(BOARD_IOID_DIO23, IOC_NO_IOPULL);
+        //
+        // ti_lib_aon_wuc_aux_wakeup_event(AONWUC_AUX_WAKEUP);
+        // while(!(ti_lib_aon_wuc_power_status_get() & AONWUC_AUX_POWER_ON)) ;
+        // ti_lib_aux_wuc_clock_enable(AUX_WUC_ADI_CLOCK | AUX_WUC_ANAIF_CLOCK | AUX_WUC_SMPH_CLOCK);
+        // while(ti_lib_aux_wuc_clock_status(AUX_WUC_ADI_CLOCK | AUX_WUC_ANAIF_CLOCK | AUX_WUC_SMPH_CLOCK) != AUX_WUC_CLOCK_READY) ;
+        // AUXADCSelectInput(ADC_COMPB_IN_AUXIO7);
+        // AUXADCEnableSync(AUXADC_REF_FIXED,  AUXADC_SAMPLE_TIME_2P7_US, AUXADC_TRIGGER_MANUAL);
+        // AUXADCGenManualTrigger();
+        // singleSample = AUXADCReadFifo();
+        // AUXADCDisable();
+        // return singleSample;
         uint16_t singleSample;
         // uint32_t pins[] = {
         //   BOARD_IOID_CS, BOARD_IOID_TDO, BOARD_IOID_TDI, BOARD_IOID_DIO12,
@@ -179,14 +203,21 @@ uint16_t readADC(void){
         //
         // uint32_t *pin;
         // Atenção: Para ler o ADC corretamente é necessário desabilitar a função de pull down ativada pela lib de inicilização da placa, aguardando report do pessoal do contiki
-        // ti_lib_ioc_io_port_pull_set(IOID_5, IOC_NO_IOPULL);
-        ti_lib_ioc_io_port_pull_set(BOARD_IOID_DIO23, IOC_NO_IOPULL);
+        #ifdef CC2650_HOMESTARK
+        ti_lib_ioc_io_port_pull_set(IOID_10, IOC_NO_IOPULL);
+        #else
+        ti_lib_ioc_io_port_pull_set(BOARD_IOID_DIO24, IOC_NO_IOPULL);
+        #endif
 
         ti_lib_aon_wuc_aux_wakeup_event(AONWUC_AUX_WAKEUP);
         while(!(ti_lib_aon_wuc_power_status_get() & AONWUC_AUX_POWER_ON)) ;
         ti_lib_aux_wuc_clock_enable(AUX_WUC_ADI_CLOCK | AUX_WUC_ANAIF_CLOCK | AUX_WUC_SMPH_CLOCK);
         while(ti_lib_aux_wuc_clock_status(AUX_WUC_ADI_CLOCK | AUX_WUC_ANAIF_CLOCK | AUX_WUC_SMPH_CLOCK) != AUX_WUC_CLOCK_READY) ;
-        AUXADCSelectInput(ADC_COMPB_IN_AUXIO7);
+        #ifdef CC2650_HOMESTARK
+        AUXADCSelectInput(ADC_COMPB_IN_AUXIO5);
+        #else
+        AUXADCSelectInput(ADC_COMPB_IN_AUXIO6);
+        #endif
         AUXADCEnableSync(AUXADC_REF_FIXED,  AUXADC_SAMPLE_TIME_2P7_US, AUXADC_TRIGGER_MANUAL);
         AUXADCGenManualTrigger();
         singleSample = AUXADCReadFifo();
