@@ -48,7 +48,9 @@
 #define UDP_PORT_OUT 5555
 #define NTC_SAMPLES 10
 #define CLOCK_MINUTE CLOCK_SECOND*60
+#define CLOCK_REPORT CLOCK_SECOND
 #define CC2650_HOMESTARK
+//#define ACTIVE_RX_UART_ISR //Descomente para habilitar recepção por callback na serial, por padrão manter desligado senão garantir 0V no RX pin
 static struct simple_udp_connection broadcast_connection;
 static uip_ipaddr_t server_addr;
 static uint16_t central_addr[] = {0xaaaa, 0, 0, 0, 0, 0, 0, 0x1};
@@ -97,12 +99,13 @@ PROCESS_THREAD(init_system_proc, ev, data){
                 linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7]);
         sprintf((char *)device_address,"[%c%c%c%c]-Device-%s",device_id[12],device_id[13],device_id[14],device_id[15],device_id);
         connect_udp_server();
-        etimer_set(&periodic_timer, CLOCK_MINUTE*15);
+        etimer_set(&periodic_timer, CLOCK_REPORT);
         debug_os("Dispositivo inicializado - %s\n", device_address);
 
         //Inicializando RX-UART
+        #ifdef ACTIVE_RX_UART_ISR
         cc26xx_uart_set_input(serial_cb_rx);
-
+        #endif
         //Inicializando ADC
         SENSORS_ACTIVATE(batmon_sensor);
         // adc_sensor.configure(SENSORS_ACTIVE, 1);
@@ -129,7 +132,7 @@ void formatDataFeedback(uint8_t *buffer, uint8_t *buff_udp){
         int def_rt_rssi = sicslowpan_get_last_rssi();
         voltBat = readBat();//batmon_sensor.value(BATMON_SENSOR_TYPE_VOLT);
         temp = readTempNTC();
-        sprintf((char *)buff_udp, "|%02X%02X|%dC|%dmV|%ddBm|",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], temp, voltBat, def_rt_rssi);
+        sprintf((char *)buff_udp, "%02X%02X|%dC|%dmV|%ddBm",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], temp, voltBat, def_rt_rssi);
         printf("\n%s - len:%d bytes",buff_udp, (unsigned int)strlen((const char *)buff_udp));
         // Formato JSON, não envio para poupar bateria mas caso seja necessário
         //sprintf((char *)buffer, "{'dev':'%02X%02X','bat':'%dmV','ad':'%dmV'}",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], ADCBat, ADC_IO7);
@@ -226,6 +229,7 @@ uint16_t readADC(void){
 }
 
 uint16_t readTempNTC(void){
+        uint16_t voltBat = readBat();
         uint16_t ADCSamples[10], meanVolt = 0, meanRes, meanTemp;
         for (size_t i = 0; i < NTC_SAMPLES; i++)
                 ADCSamples[i] = readADC();
@@ -239,7 +243,7 @@ uint16_t readTempNTC(void){
         printf("\nNTC(mV): %dmV",meanVolt);
 
         // Convertendo em ohms
-        meanRes = meanVolt*10000/(3330-meanVolt);
+        meanRes = meanVolt*10000/(voltBat-meanVolt);
         printf("\nNTC(Ohms): %d ohms",meanRes);
 
         // Convertendo em graus celsius
