@@ -1,6 +1,6 @@
 obj_srf06-cc26xx/dhcpc.o: ..//core/net/ip/dhcpc.c ..//core/./contiki.h \
  ..//core/./contiki-version.h ..//platform/srf06-cc26xx/./contiki-conf.h \
- project-conf.h ..//platform/srf06-cc26xx/launchpad/cc2650/board.h \
+ project-conf.h ..//platform/srf06-cc26xx/srf06/cc26xx/board.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h \
@@ -65,7 +65,7 @@ obj_srf06-cc26xx/dhcpc.o: ..//core/net/ip/dhcpc.c ..//core/./contiki.h \
  ..//core/./net/ip/dhcpc.h
 ..//core/net/ip/dhcpc.c ..//core/./contiki.h :
  ..//core/./contiki-version.h ..//platform/srf06-cc26xx/./contiki-conf.h :
- project-conf.h ..//platform/srf06-cc26xx/launchpad/cc2650/board.h :
+ project-conf.h ..//platform/srf06-cc26xx/srf06/cc26xx/board.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h :

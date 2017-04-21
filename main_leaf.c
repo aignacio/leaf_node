@@ -43,6 +43,7 @@
 #include "ti-lib.h"
 #include "driverlib/aux_adc.h"
 #include "driverlib/aux_wuc.h"
+#include "net/ip/uip-debug.h"
 
 #define UDP_PORT_CENTRAL 7878
 #define UDP_PORT_OUT 5555
@@ -63,6 +64,7 @@ uint16_t readADC(void);
 uint16_t readTempNTC(void);
 void getDecStr(uint8_t* str, uint8_t len, uint32_t val);
 void formatDataFeedback(uint8_t *buffer, uint8_t *buff_udp);
+int ipaddr_sprintf(char *buf, uint8_t buf_len, const uip_ipaddr_t *addr);
 
 /*---------------------------------------------------------------------------*/
 PROCESS(init_system_proc, "Init system process");
@@ -130,9 +132,12 @@ PROCESS_THREAD(init_system_proc, ev, data){
 void formatDataFeedback(uint8_t *buffer, uint8_t *buff_udp){
         uint16_t temp, voltBat;
         int def_rt_rssi = sicslowpan_get_last_rssi();
+        char def_rt_str[64];
+        memset(def_rt_str, 0, sizeof(def_rt_str));
+        ipaddr_sprintf(def_rt_str, sizeof(def_rt_str), uip_ds6_defrt_choose());
         voltBat = readBat();//batmon_sensor.value(BATMON_SENSOR_TYPE_VOLT);
         temp = readTempNTC();
-        sprintf((char *)buff_udp, "%02X%02X|%dC|%dmV|%ddBm",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], temp, voltBat, def_rt_rssi);
+        sprintf((char *)buff_udp, "%02X%02X|%dC|%dmV|%ddBm|%s",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], temp, voltBat, def_rt_rssi,def_rt_str);
         printf("\n%s - len:%d bytes",buff_udp, (unsigned int)strlen((const char *)buff_udp));
         // Formato JSON, não envio para poupar bateria mas caso seja necessário
         //sprintf((char *)buffer, "{'dev':'%02X%02X','bat':'%dmV','ad':'%dmV'}",linkaddr_node_addr.u8[6],linkaddr_node_addr.u8[7], ADCBat, ADC_IO7);
@@ -284,4 +289,29 @@ void connect_udp_server(){
                             UDP_PORT_CENTRAL,
                             cb_receive_udp);
 
+}
+
+int
+ipaddr_sprintf(char *buf, uint8_t buf_len, const uip_ipaddr_t *addr)
+{
+  uint16_t a;
+  uint8_t len = 0;
+  int i, f;
+  for(i = 0, f = 0; i < sizeof(uip_ipaddr_t); i += 2) {
+    a = (addr->u8[i] << 8) + addr->u8[i + 1];
+    if(a == 0 && f >= 0) {
+      if(f++ == 0) {
+        len += snprintf(&buf[len], buf_len - len, "::");
+      }
+    } else {
+      if(f > 0) {
+        f = -1;
+      } else if(i > 0) {
+        len += snprintf(&buf[len], buf_len - len, ":");
+      }
+      len += snprintf(&buf[len], buf_len - len, "%x", a);
+    }
+  }
+
+  return len;
 }

@@ -1,6 +1,6 @@
 obj_srf06-cc26xx/linkaddr.o: ..//core/net/linkaddr.c \
  ..//core/./net/linkaddr.h ..//platform/srf06-cc26xx/./contiki-conf.h \
- project-conf.h ..//platform/srf06-cc26xx/launchpad/cc2650/board.h \
+ project-conf.h ..//platform/srf06-cc26xx/srf06/cc26xx/board.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h \
@@ -17,7 +17,7 @@ obj_srf06-cc26xx/linkaddr.o: ..//core/net/linkaddr.c \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_gpio.h
 ..//core/net/linkaddr.c :
  ..//core/./net/linkaddr.h ..//platform/srf06-cc26xx/./contiki-conf.h :
- project-conf.h ..//platform/srf06-cc26xx/launchpad/cc2650/board.h :
+ project-conf.h ..//platform/srf06-cc26xx/srf06/cc26xx/board.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h :

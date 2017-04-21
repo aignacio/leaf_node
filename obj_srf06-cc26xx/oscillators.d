@@ -66,7 +66,7 @@ obj_srf06-cc26xx/oscillators.o: ..//cpu/cc26xx-cc13xx/dev/oscillators.c \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_wdt.h \
  ..//cpu/cc26xx-cc13xx/dev/aux-ctrl.h ..//core/./contiki.h \
  ..//core/./contiki-version.h ..//platform/srf06-cc26xx/./contiki-conf.h \
- project-conf.h ..//platform/srf06-cc26xx/launchpad/cc2650/board.h \
+ project-conf.h ..//platform/srf06-cc26xx/srf06/cc26xx/board.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h \
  ..//core/./contiki-default-conf.h ..//core/./sys/process.h \
  ..//core/./sys/pt.h ..//core/./sys/lc.h ..//core/./sys/lc-switch.h \
@@ -145,7 +145,7 @@ obj_srf06-cc26xx/oscillators.o: ..//cpu/cc26xx-cc13xx/dev/oscillators.c \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_wdt.h :
  ..//cpu/cc26xx-cc13xx/dev/aux-ctrl.h ..//core/./contiki.h :
  ..//core/./contiki-version.h ..//platform/srf06-cc26xx/./contiki-conf.h :
- project-conf.h ..//platform/srf06-cc26xx/launchpad/cc2650/board.h :
+ project-conf.h ..//platform/srf06-cc26xx/srf06/cc26xx/board.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h :
  ..//core/./contiki-default-conf.h ..//core/./sys/process.h :
  ..//core/./sys/pt.h ..//core/./sys/lc.h ..//core/./sys/lc-switch.h :

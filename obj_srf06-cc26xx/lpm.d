@@ -13,7 +13,7 @@ obj_srf06-cc26xx/lpm.o: ..//cpu/cc26xx-cc13xx/./lpm.c \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_cpu_scs.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/rom.h \
  ..//platform/srf06-cc26xx/./contiki-conf.h project-conf.h \
- ..//platform/srf06-cc26xx/launchpad/cc2650/board.h \
+ ..//platform/srf06-cc26xx/srf06/cc26xx/board.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_ioc.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/gpio.h \
@@ -99,7 +99,7 @@ obj_srf06-cc26xx/lpm.o: ..//cpu/cc26xx-cc13xx/./lpm.c \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_cpu_scs.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/rom.h :
  ..//platform/srf06-cc26xx/./contiki-conf.h project-conf.h :
- ..//platform/srf06-cc26xx/launchpad/cc2650/board.h :
+ ..//platform/srf06-cc26xx/srf06/cc26xx/board.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_ioc.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/gpio.h :

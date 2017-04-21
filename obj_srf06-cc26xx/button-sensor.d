@@ -1,7 +1,7 @@
 obj_srf06-cc26xx/button-sensor.o: \
- ..//platform/srf06-cc26xx/launchpad/button-sensor.c ..//core/./contiki.h \
+ ..//platform/srf06-cc26xx/srf06/button-sensor.c ..//core/./contiki.h \
  ..//core/./contiki-version.h ..//platform/srf06-cc26xx/./contiki-conf.h \
- project-conf.h ..//platform/srf06-cc26xx/launchpad/cc2650/board.h \
+ project-conf.h ..//platform/srf06-cc26xx/srf06/cc26xx/board.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h \
@@ -26,7 +26,7 @@ obj_srf06-cc26xx/button-sensor.o: \
  ..//core/./sys/procinit.h ..//core/./sys/loader.h ..//core/./sys/clock.h \
  ..//core/./sys/energest.h ..//core/./sys/rtimer.h \
  ..//core/./lib/sensors.h \
- ..//platform/srf06-cc26xx/./launchpad/button-sensor.h \
+ ..//platform/srf06-cc26xx/./srf06/button-sensor.h \
  ..//cpu/cc26xx-cc13xx/dev/gpio-interrupt.h ..//cpu/cc26xx-cc13xx/./lpm.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/pwr_ctrl.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_aon_wuc.h \
@@ -81,9 +81,9 @@ obj_srf06-cc26xx/button-sensor.o: \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/uart.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/watchdog.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_wdt.h
- ..//platform/srf06-cc26xx/launchpad/button-sensor.c ..//core/./contiki.h :
+ ..//platform/srf06-cc26xx/srf06/button-sensor.c ..//core/./contiki.h :
  ..//core/./contiki-version.h ..//platform/srf06-cc26xx/./contiki-conf.h :
- project-conf.h ..//platform/srf06-cc26xx/launchpad/cc2650/board.h :
+ project-conf.h ..//platform/srf06-cc26xx/srf06/cc26xx/board.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h :
@@ -108,7 +108,7 @@ obj_srf06-cc26xx/button-sensor.o: \
  ..//core/./sys/procinit.h ..//core/./sys/loader.h ..//core/./sys/clock.h :
  ..//core/./sys/energest.h ..//core/./sys/rtimer.h :
  ..//core/./lib/sensors.h :
- ..//platform/srf06-cc26xx/./launchpad/button-sensor.h :
+ ..//platform/srf06-cc26xx/./srf06/button-sensor.h :
  ..//cpu/cc26xx-cc13xx/dev/gpio-interrupt.h ..//cpu/cc26xx-cc13xx/./lpm.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/pwr_ctrl.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_aon_wuc.h :

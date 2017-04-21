@@ -1,6 +1,6 @@
 obj_srf06-cc26xx/rtimer.o: ..//core/sys/rtimer.c ..//core/./sys/rtimer.h \
  ..//platform/srf06-cc26xx/./contiki-conf.h project-conf.h \
- ..//platform/srf06-cc26xx/launchpad/cc2650/board.h \
+ ..//platform/srf06-cc26xx/srf06/cc26xx/board.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h \
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h \
@@ -26,7 +26,7 @@ obj_srf06-cc26xx/rtimer.o: ..//core/sys/rtimer.c ..//core/./sys/rtimer.h \
  ..//core/./sys/loader.h ..//core/./sys/clock.h ..//core/./sys/energest.h
 ..//core/sys/rtimer.c ..//core/./sys/rtimer.h :
  ..//platform/srf06-cc26xx/./contiki-conf.h project-conf.h :
- ..//platform/srf06-cc26xx/launchpad/cc2650/board.h :
+ ..//platform/srf06-cc26xx/srf06/cc26xx/board.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/driverlib/ioc.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_types.h :
  ..//cpu/cc26xx-cc13xx/lib/cc26xxware/inc/hw_chip_def.h :
