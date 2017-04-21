@@ -49,7 +49,7 @@
 #define UDP_PORT_OUT 5555
 #define NTC_SAMPLES 10
 #define CLOCK_MINUTE CLOCK_SECOND*60
-#define CLOCK_REPORT CLOCK_SECOND
+#define CLOCK_REPORT CLOCK_MINUTE*15
 #define CC2650_HOMESTARK
 //#define ACTIVE_RX_UART_ISR //Descomente para habilitar recepção por callback na serial, por padrão manter desligado senão garantir 0V no RX pin
 static struct simple_udp_connection broadcast_connection;
